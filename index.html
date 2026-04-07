@@ -3,132 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life & Space Tracker</title>
+<title>Life stats Tracker</title>
 
-<style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #eef2f7, #d9e4f5);
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-h2 {
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-bottom: 15px;
-
-    background: linear-gradient(90deg, #95122c, #79292c);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-body.dark h2 {
-    background: linear-gradient(90deg, #80ced7, #007ea7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-body.dark {
-    background: #0f172a;
-    color: #e2e8f0;
-}
-
-.card {
-    background: #fff;
-    padding: 25px;
-    width: 400px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-body.dark .card {
-    background: #1e293b;
-}
-.subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: -5px;
-}
-
-body.dark .subtitle {
-    color: #94a3b8;
-}
-.date-wrapper {
-    position: relative;
-}
-
-.date-wrapper input {
-    position: relative;
-    background: transparent;
-}
-
-.placeholder {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #888;
-    pointer-events: none;
-}
-input, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 6px;
-}
-
-button {
-    background: #87ae73;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-.clr{
-  background: #ffc0cb;
-}
-
-.secondary {
-    background: #a8d1d1;
-}
-
-.result {
-    margin-top: 20px;
-    line-height: 1.6;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: 0.4s;
-}
-
-.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.highlight {
-    color: #2563eb;
-    font-weight: bold;
-}
-
-.error {
-    color: red;
-    font-size: 14px;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="card">
     <h2>Your Life in Numbers</h2>
-    <p class="subtitle">A personalized view of your time, energy, and cosmic journey</p>
+    <p class="subtitle">(A personalized view of your time, energy, and cosmic journey) </p>
+
     <div class="date-wrapper">
-    <span class="placeholder">Pick your birthday 🎂</span>
-    <input type="date" id="birthDate">
-</div>
+        <span class="placeholder">Pick your birthday 🎂</span>
+        <input type="date" id="birthDate">
+    </div>
+
     <div class="error" id="error"></div>
 
     <button onclick="calculate()">Calculate</button>
@@ -139,132 +29,6 @@ button {
     <button class="secondary" onclick="toggleDarkMode()">🌙 Toggle Dark</button>
 </div>
 
-<script>
-const birthInput = document.getElementById("birthDate");
-const resultBox = document.getElementById("result");
-const errorBox = document.getElementById("error");
-
-window.onload = () => {
-    const savedDate = localStorage.getItem("birthDate");
-    const darkMode = localStorage.getItem("darkMode");
-
-    if (savedDate) {
-        birthInput.value = savedDate;
-        calculate();
-    }
-
-    if (darkMode === "true") {
-        document.body.classList.add("dark");
-    }
-
-    setInterval(calculate, 86400000);
-};
-
-function calculate() {
-    const input = birthInput.value;
-    errorBox.textContent = "";
-
-    if (!input) {
-        errorBox.textContent = "Select your birth date!";
-        return;
-    }
-
-    const birth = new Date(input);
-    const today = new Date();
-
-    if (birth > today) {
-        errorBox.textContent = "Invalid date!";
-        return;
-    }
-
-    localStorage.setItem("birthDate", input);
-
-    const daysLived = Math.floor((today - birth) / (1000*60*60*24));
-
-    let years = today.getFullYear() - birth.getFullYear();
-    let months = today.getMonth() - birth.getMonth();
-    let days = today.getDate() - birth.getDate();
-
-    if (days < 0) {
-        months--;
-        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-    }
-    if (months < 0) {
-        years--;
-        months += 12;
-    }
-
-    let nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
-    if (nextBirthday < today) nextBirthday.setFullYear(today.getFullYear()+1);
-
-    const daysLeft = Math.ceil((nextBirthday - today)/(1000*60*60*24));
-
-    const zodiac = getZodiac(birth.getDate(), birth.getMonth()+1);
-    
-    const kmPerDayOrbit = 2570000;
-    
-    const milkyWayPerDay = 19900000;
-    
-    const avgHeartRate = 72;
-    
-    const sleepHoursPerDay = 8;
-    
-    const sunDistance = daysLived * kmPerDayOrbit; 
-
-    const moonCycles = daysLived / 29.5;
-
-    const spaceDistance = daysLived * milkyWayPerDay;
-
-    const heartbeats = daysLived * 24 * 60 * avgHeartRate;
-
-    const sleepDays = (daysLived * sleepHoursPerDay)/24;
-
-    resultBox.innerHTML = `
-        🎂 Age: <span class="highlight">${years}</span>y ${months}m ${days}d<br>
-        🌍 Days lived: <span class="highlight">${daysLived}</span><br>
-        🎉 Next Birthday: <span class="highlight">${daysLeft}</span> days<br>
-        ♈ Zodiac: <span class="highlight">${zodiac}</span>
-
-        <h3>Since you were born...</h3>
-        Your heart has beaten(approx.): <span class="highlight">${heartbeats.toLocaleString()}</span> times<br><br>
-        you've Travelled around Sun: <span class="highlight">${sunDistance.toLocaleString()}</span> km<br><br>
-      Moon has orbited around you : <span class="highlight">${moonCycles.toFixed(2)}</span> times<br><br>
-        you've travelled around milkyway: <span class="highlight">${spaceDistance.toLocaleString()}</span> km<br><br>
-        you have slept(approx.): <span class="highlight">${sleepDays.toLocaleString()}</span> days
-    `;
-
-    resultBox.classList.add("show");
-}
-
-function clearData() {
-    localStorage.clear();
-    birthInput.value = "";
-    resultBox.innerHTML = "";
-    resultBox.classList.remove("show");
-}
-
-function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-}
-birthInput.addEventListener("change", () => {
-    document.querySelector(".placeholder").style.display = "none";
-});
-function getZodiac(day, month) {
-    if ((month==3&&day>=21)||(month==4&&day<=19)) return "Aries ♈";
-    if ((month==4&&day>=20)||(month==5&&day<=20)) return "Taurus ♉";
-    if ((month==5&&day>=21)||(month==6&&day<=20)) return "Gemini ♊";
-    if ((month==6&&day>=21)||(month==7&&day<=22)) return "Cancer ♋";
-    if ((month==7&&day>=23)||(month==8&&day<=22)) return "Leo ♌";
-    if ((month==8&&day>=23)||(month==9&&day<=22)) return "Virgo ♍";
-    if ((month==9&&day>=23)||(month==10&&day<=22)) return "Libra ♎";
-    if ((month==10&&day>=23)||(month==11&&day<=21)) return "Scorpio ♏";
-    if ((month==11&&day>=22)||(month==12&&day<=21)) return "Sagittarius ♐";
-    if ((month==12&&day>=22)||(month==1&&day<=19)) return "Capricorn ♑";
-    if ((month==1&&day>=20)||(month==2&&day<=18)) return "Aquarius ♒";
-    return "Pisces ♓";
-}
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
