@@ -15,7 +15,7 @@ function calculate() {
     const today = new Date();
 
     if (birth > today) {
-        errorBox.textContent = "Invalid date!";
+        errorBox.textContent = "That birthday hasn't happened in this universe yet";
         return;
     }
 
